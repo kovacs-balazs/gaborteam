@@ -1,0 +1,7 @@
+me\koba1\gaborteam\listeners\PlayerJoinListener.class
+me\koba1\gaborteam\files\PlayerDataFile.class
+me\koba1\gaborteam\utils\Utils.class
+me\koba1\gaborteam\objects\Team.class
+me\koba1\gaborteam\Main.class
+me\koba1\gaborteam\listeners\PlayerQuitListener.class
+me\koba1\gaborteam\objects\TeamEntity.class

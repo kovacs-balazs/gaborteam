@@ -1,0 +1,5 @@
+name: GaborTeam
+version: '${project.version}'
+main: me.koba1.gaborteam.Main
+
+api-version: '1.13'
