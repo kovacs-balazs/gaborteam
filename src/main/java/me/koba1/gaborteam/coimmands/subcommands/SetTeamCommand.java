@@ -63,7 +63,7 @@ public class SetTeamCommand implements SubCommand {
 
         Team targetTeam = Utils.getTeam(target);
         if(targetTeam != null) {
-            targetTeam.leave(target.getUniqueId());
+            targetTeam.leave(target);
         }
 
         if(team.getMaxMembers() <= team.getPlayers().size() + 1) {

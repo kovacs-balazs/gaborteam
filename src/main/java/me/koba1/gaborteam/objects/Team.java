@@ -78,10 +78,12 @@ public class Team {
     }
 
     public boolean isRespawn() {
-        return this.entity == null || !this.entity.getEntity().isDead();
+        return this.entity.getEntity() == null || !this.entity.getEntity().isDead();
     }
     public void setPrefix(Player player) {
-        TabAPI.getInstance().getNameTagManager().setPrefix(TabAPI.getInstance().getPlayer(player.getUniqueId()), this.color);
+        TabPlayer tabPlayer = TabAPI.getInstance().getPlayer(player.getUniqueId());
+        TabAPI.getInstance().getNameTagManager().setPrefix(tabPlayer, this.color);
+        TabAPI.getInstance().getTabListFormatManager().setPrefix(tabPlayer, this.color);
     }
 
     public void removePrefix(Player player) {
@@ -89,11 +91,13 @@ public class Team {
         TabPlayer target = TabAPI.getInstance().getPlayer(player.getUniqueId());
         if(target == null) return;
         TabAPI.getInstance().getNameTagManager().setPrefix(target, null);
+        TabAPI.getInstance().getTabListFormatManager().setPrefix(target, null);
     }
 
     public void join(Player player) {
         setPrefix(player);
-        this.players.add(player);
+        if(!this.players.contains(player))
+            this.players.add(player);
         if(isRespawn()) {
             player.setGameMode(GameMode.SURVIVAL);
         }
@@ -108,8 +112,14 @@ public class Team {
             if(p == null) return;
             p.setGameMode(GameMode.SURVIVAL);
         }
+
         PlayerDataFile.get().set(uuid.toString(), null);
         PlayerDataFile.getConfig().save();
+    }
+
+    public void leave(Player player) {
+        this.players.remove(player);
+        leave(player.getUniqueId());
     }
 
     public void save() {

@@ -1,10 +1,7 @@
 package me.koba1.gaborteam.coimmands;
 
 import me.koba1.gaborteam.coimmands.argumentmatchers.ContainingAllCharsOfStringArgumentMatcher;
-import me.koba1.gaborteam.coimmands.subcommands.PlaceEntityCommand;
-import me.koba1.gaborteam.coimmands.subcommands.ReloadCommand;
-import me.koba1.gaborteam.coimmands.subcommands.RespawnTeamCommand;
-import me.koba1.gaborteam.coimmands.subcommands.SetTeamCommand;
+import me.koba1.gaborteam.coimmands.subcommands.*;
 
 public class TeamCommand extends MainCommand {
     public TeamCommand () {
@@ -19,5 +16,6 @@ public class TeamCommand extends MainCommand {
         subCommands.add(new PlaceEntityCommand());
         subCommands.add(new RespawnTeamCommand());
         subCommands.add(new ReloadCommand());
+        subCommands.add(new GiveItemCommand());
     }
 }

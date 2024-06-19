@@ -9,6 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,22 +38,41 @@ public class RespawnTeamCommand implements SubCommand {
     public List<String> getTabCompletion(int index, String[] args) {
         switch (index) {
             case 0:
-                return Main.getTeams().keySet().stream().toList();
+                List<String> asd = new ArrayList<>();
+                asd.add("all");
+                asd.addAll(Main.getTeams().keySet());
+                return asd;
         }
         return List.of();
     }
 
     @Override
     public void perform(CommandSender sender, String[] args) {
+        if(args.length != 1) {
+            sender.sendMessage("§c" + getSyntax());
+            return;
+        }
+
         Team team = Utils.getTeam(args[0]);
         if(team == null) {
+            if(args[0].equalsIgnoreCase("all")) {
+                for (Team value : Main.getTeams().values()) {
+                    value.getEntity().spawn();
+                    for (Player target : value.getPlayers()) {
+                        if(target.getGameMode() == GameMode.SPECTATOR) {
+                            target.setGameMode(GameMode.SURVIVAL);
+                        }
+                    }
+                }
+                return;
+            }
+
             sender.sendMessage("§cCsapat nem található.");
             return;
         }
 
         team.getEntity().spawn();
         for (Player target : team.getPlayers()) {
-
             if(target.getGameMode() == GameMode.SPECTATOR) {
                 target.setGameMode(GameMode.SURVIVAL);
             }

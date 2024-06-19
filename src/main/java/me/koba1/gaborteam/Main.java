@@ -4,13 +4,14 @@ import fr.mrmicky.fastboard.FastBoard;
 import lombok.Getter;
 import me.koba1.gaborteam.coimmands.TeamCommand;
 import me.koba1.gaborteam.files.PlayerDataFile;
-import me.koba1.gaborteam.listeners.PlayerJoinListener;
-import me.koba1.gaborteam.listeners.PlayerQuitListener;
-import me.koba1.gaborteam.listeners.PlayerRespawnListener;
+import me.koba1.gaborteam.listeners.*;
 import me.koba1.gaborteam.objects.Team;
+import me.koba1.gaborteam.objects.TeamItem;
 import me.koba1.gaborteam.scoreboard.ScoreboardManager;
 import me.koba1.gaborteam.utils.Utils;
 import me.koba1.gaborteam.utils.formatters.Formatter;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.event.player.PlayerLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 public final class Main extends JavaPlugin {
 
+    @Getter private static Map<String, TeamItem> items;
     @Getter private static Map<Player, FastBoard> boards;
     @Getter private static Map<String, Team> teams;
     @Getter private static Main instance;
@@ -32,6 +34,7 @@ public final class Main extends JavaPlugin {
         // Plugin startup logic
         instance = this;
 
+        items = new HashMap<>();
         boards = new HashMap<>();
         teams = new HashMap<>();
 
@@ -43,7 +46,10 @@ public final class Main extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityTargetListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerRespawnListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityProtectionListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityDamageListener(), this);
 
         TeamCommand teamCommand = new TeamCommand();
         teamCommand.registerMainCommand(this, "team");
@@ -55,6 +61,23 @@ public final class Main extends JavaPlugin {
         }
 
         scoreboardTimer();
+
+        TabAPI.getInstance().getEventBus().register(PlayerLoadEvent.class, event -> {
+            Player player = Bukkit.getPlayer(event.getPlayer().getUniqueId());
+            if(player == null) return;
+            Team team = Utils.getTeam(player);
+            if(team == null) return;
+
+            team.setPrefix(player);
+        });
+    }
+
+    public void loadItems() {
+        items.clear();
+        for (String key : getConfig().getConfigurationSection("items").getKeys(false)) {
+            TeamItem item = new TeamItem(getConfig().getConfigurationSection("items." + key));
+            items.put(key, item);
+        }
     }
 
     public void reload() {
@@ -66,6 +89,8 @@ public final class Main extends JavaPlugin {
 
             new Team(key);
         }
+
+        loadItems();
 
         String title = getConfig().getString("scoreboard.title");
         scoreboardManager = new ScoreboardManager(

@@ -74,7 +74,7 @@ public class TeamEntity {
             livingEntity.setMaxHealth(this.maxHealth);
             livingEntity.setHealth(this.maxHealth);
         }
-        livingEntity.setAI(false);
+        livingEntity.setAI(true);
         if(livingEntity instanceof Skeleton skel)
             skel.setAggressive(false);
         livingEntity.setGravity(false);
@@ -101,7 +101,7 @@ public class TeamEntity {
         container.set(team, PersistentDataType.STRING, this.team.getKey());
     }
 
-    private boolean isTeamEntity(Entity entity) {
+    public boolean isTeamEntity(Entity entity) {
         PersistentDataContainer container = entity.getPersistentDataContainer();
         NamespacedKey teamEntity = new NamespacedKey(Main.getInstance(), "teamEntity");
         NamespacedKey team = new NamespacedKey(Main.getInstance(), "team");
@@ -130,6 +130,7 @@ public class TeamEntity {
                 .append(", ")
                 .append(this.location.getPitch())
                 .toString();
+
         Main.getInstance().getConfig().set("teams.%s.entity.location".formatted(this.team.getKey()), loc);
         Main.getInstance().saveConfig();
     }

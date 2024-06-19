@@ -31,7 +31,7 @@ teams:
     color: "&e"
     maximum_members: 10
     entity:
-      location: world; 0, 100, 1, 0, 0
+      location: world; 0, 100, 3, 0, 0
       health: 1000
       last_health: 1000 # EZT NE ÍRD ÁT! (csak ha akarod)
       name: "&eKaproncai"
@@ -39,12 +39,28 @@ teams:
 
 scoreboard:
   health_design: "|||%mob_health%|||"
-  title: "&3&lPÁGISZ"
+  title: "&3&lCORE BOSSES"
   lines:
     - " "
-    - " &4[%red_health%&4] &cPiros"
-    - " &4[%green_health%&4] &aZöld"
-    - " &4[%blue_health%&4] &9Kék"
-    - " &4[%yellow_health%&4] &eSárga"
+    - "&7• &4[%red_health%&4] &cPiros"
+    - "&7• &4[%green_health%&4] &aZöld"
+    - "&7• &4[%blue_health%&4] &9Kék"
+    - "&7• &4[%yellow_health%&4] &eSárga"
     - " "
     - "&7dc.pagisz.hu"
+
+items:
+  god_helmet:
+    material: GOLDEN_HELMET
+    display_name: "&6&lGOD HELMET"
+    lore:
+      - " "
+      - " &7&oÓ, te aranysisak, istenek ajándéka!"
+      - " &7&oErőd és varázslataid minden veszély ellen"
+      - " &7&omegvédenek. Fényed beragyogja utamat,"
+      - " &7&oés viselve téged, legyőzhetetlen vagyok."
+    enchantments:
+      - "UNBREAKING;20"
+      - "PROTECTION;10"
+    item_flags:
+      - "HIDE_ENCHANTS"
