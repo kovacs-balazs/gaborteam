@@ -31,7 +31,7 @@ teams:
     color: "&e"
     maximum_members: 10
     entity:
-      location: world; 0, 100, 3, 0, 0
+      location: world; 0, 100, 1, 0, 0
       health: 1000
       last_health: 1000 # EZT NE ÍRD ÁT! (csak ha akarod)
       name: "&eKaproncai"

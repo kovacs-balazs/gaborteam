@@ -27,7 +27,7 @@ public class ScoreboardManager {
                 for (Team value : Main.getTeams().values()) {
                     if(!line.contains("%" + value.getKey() + "_health%")) continue;
 
-                    int maxHealth = Math.round(Math.round(value.getEntity().getEntity().getMaxHealth()));
+                    int maxHealth = Math.round(Math.round(value.getEntity().getMaxHealth()));
                     if(value.getEntity().getEntity() == null || value.getEntity().getEntity().isDead()) {
                         lines.add(line.replace("%" + value.getKey() + "_health%", "§8" + this.healthDesign.replace("%mob_health%",  "0")));
                         continue outer;

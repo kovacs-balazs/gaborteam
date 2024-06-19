@@ -48,6 +48,7 @@ public class Team {
 
     public void load() {
         String path = "teams." + this.key + ".";
+
         this.name = Formatter.applyColor(Main.getInstance().getConfig().getString(path + "name"));
         this.color = Formatter.applyColor(Main.getInstance().getConfig().getString(path + "color")); // LEGACY.deserialize(Main.getInstance().getConfig().getString(path + "color"));
         this.maxMembers = Main.getInstance().getConfig().getInt(path + "maximum_members");
@@ -56,10 +57,9 @@ public class Team {
                 this,
                 Main.getInstance().getConfig().getString(path + "entity.name"),
                 Utils.getLocation(Main.getInstance().getConfig().getString(path + "entity.location")),
-                Main.getInstance().getConfig().getDouble(path + "entity.health")
+                Main.getInstance().getConfig().getDouble(path + "entity.health"),
+                Main.getInstance().getConfig().getDouble(path + "entity.last_health")
         );
-
-        this.entity.getEntity().setHealth(Main.getInstance().getConfig().getDouble(path + "entity.last_health"));
 
         for (Player player : this.players) {
             setPrefix(player);
@@ -68,8 +68,17 @@ public class Team {
         System.out.println("Loadolva team: " + this.key);
     }
 
+    public void reload() {
+        String path = "teams." + this.key + ".";
+        this.name = Formatter.applyColor(Main.getInstance().getConfig().getString(path + "name"));
+        this.color = Formatter.applyColor(Main.getInstance().getConfig().getString(path + "color")); // LEGACY.deserialize(Main.getInstance().getConfig().getString(path + "color"));
+        this.maxMembers = Main.getInstance().getConfig().getInt(path + "maximum_members");
+
+        this.entity.reload();
+    }
+
     public boolean isRespawn() {
-        return !this.entity.getEntity().isDead();
+        return this.entity == null || !this.entity.getEntity().isDead();
     }
     public void setPrefix(Player player) {
         TabAPI.getInstance().getNameTagManager().setPrefix(TabAPI.getInstance().getPlayer(player.getUniqueId()), this.color);

@@ -10,6 +10,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
+import java.util.Objects;
+
 
 @Getter
 public class TeamEntity {
@@ -29,38 +31,63 @@ public class TeamEntity {
         spawn();
     }
 
+    public TeamEntity(Team team, String name, Location location, double maxHealth, double lastHealth) {
+        this.team = team;
+        this.name = name;
+        this.location = location;
+        this.maxHealth = maxHealth;
+        this.entity = null;
+
+        if(lastHealth > 0) {
+            spawn();
+            this.entity.setHealth(lastHealth);
+        }
+    }
+
+    public void reload() {
+        if(this.entity != null) {
+            setupEntity(this.entity, false);
+        }
+    }
+
     public void spawn() {
         if(this.entity != null) this.entity.remove();
         for (Skeleton skeleton : this.location.getNearbyEntitiesByType(Skeleton.class, 1)) {
             if(isTeamEntity(skeleton)) {
                 System.out.println("Entity megtalálva!");
+                setupEntity(skeleton, false);
                 this.entity = skeleton;
                 return;
             }
         }
 
         Skeleton skeleton = (Skeleton) this.location.getWorld().spawnEntity(this.location, EntityType.SKELETON);
+        System.out.println("Spawned entity: " + this.location);
         setTeamEntity(skeleton);
-        skeleton.setMaxHealth(this.maxHealth);
-        skeleton.setHealth(this.maxHealth);
-        skeleton.setAI(false);
-        skeleton.setAggressive(false);
-        skeleton.setGravity(false);
-        skeleton.setJumping(false);
-        skeleton.setFireTicks(0);
-        skeleton.setVisualFire(false);
-        skeleton.setCustomName(ChatColor.translateAlternateColorCodes('&', this.name));
-        skeleton.setCustomNameVisible(true);
-        this.entity = skeleton;
+        setupEntity(skeleton, true);
 
-        System.out.println("Entity lespawnolva!");
+        this.entity = skeleton;
+    }
+
+    public void setupEntity(LivingEntity livingEntity, boolean setHealth) {
+        if(setHealth) {
+            livingEntity.setMaxHealth(this.maxHealth);
+            livingEntity.setHealth(this.maxHealth);
+        }
+        livingEntity.setAI(false);
+        if(livingEntity instanceof Skeleton skel)
+            skel.setAggressive(false);
+        livingEntity.setGravity(false);
+        livingEntity.setJumping(false);
+        livingEntity.setCustomName(ChatColor.translateAlternateColorCodes('&', this.name));
+        livingEntity.setCustomNameVisible(true);
     }
 
     public void setLocation(Location location) {
         this.location = location;
 
         if(this.entity == null) {
-            spawn();
+            // spawn();
             return;
         }
         this.entity.teleport(location);
@@ -68,21 +95,30 @@ public class TeamEntity {
 
     private void setTeamEntity(Entity entity) {
         PersistentDataContainer container = entity.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(Main.getInstance(), "teamEntity");
-        container.set(key, PersistentDataType.BOOLEAN, true);
+        NamespacedKey teamEntity = new NamespacedKey(Main.getInstance(), "teamEntity");
+        NamespacedKey team = new NamespacedKey(Main.getInstance(), "team");
+        container.set(teamEntity, PersistentDataType.BOOLEAN, true);
+        container.set(team, PersistentDataType.STRING, this.team.getKey());
     }
 
     private boolean isTeamEntity(Entity entity) {
         PersistentDataContainer container = entity.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(Main.getInstance(), "teamEntity");
-        return container.has(key, PersistentDataType.BOOLEAN) && container.get(key, PersistentDataType.BOOLEAN);
+        NamespacedKey teamEntity = new NamespacedKey(Main.getInstance(), "teamEntity");
+        NamespacedKey team = new NamespacedKey(Main.getInstance(), "team");
+        if (container.has(teamEntity, PersistentDataType.BOOLEAN) && Boolean.TRUE.equals(container.get(teamEntity, PersistentDataType.BOOLEAN))) {
+            if(container.has(team, PersistentDataType.STRING)) {
+                return Objects.equals(container.get(team, PersistentDataType.STRING), this.team.getKey());
+            }
+        }
+        return false;
     }
 
     public void save() {
-        Main.getInstance().getConfig().set("teams.%s.entity.last_health".formatted(this.team.getKey()), this.entity.getHealth());
+        if(this.entity != null)
+            Main.getInstance().getConfig().set("teams.%s.entity.last_health".formatted(this.team.getKey()), this.entity.getHealth());
 
         String loc = new StringBuilder()
-                .append(this.location.getWorld())
+                .append(this.location.getWorld().getName())
                 .append("; ")
                 .append(this.location.getX())
                 .append(", ")
@@ -95,5 +131,6 @@ public class TeamEntity {
                 .append(this.location.getPitch())
                 .toString();
         Main.getInstance().getConfig().set("teams.%s.entity.location".formatted(this.team.getKey()), loc);
+        Main.getInstance().saveConfig();
     }
 }

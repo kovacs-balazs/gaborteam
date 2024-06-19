@@ -60,7 +60,7 @@ public final class Main extends JavaPlugin {
     public void reload() {
         for (String key : getConfig().getConfigurationSection("teams").getKeys(false)) {
             if (Main.getTeams().containsKey(key)) {
-                teams.get(key).load();
+                teams.get(key).reload();
                 continue;
             }
 
