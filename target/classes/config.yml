@@ -1,9 +1,50 @@
 teams:
   red:
+    name: "&cPiros"
     color: "&c"
     maximum_members: 10
     entity:
       location: world; 0, 100, 0, 0, 0
       health: 1000
       last_health: 1000 # EZT NE ÍRD ÁT! (csak ha akarod)
-      name: "&cTúsz"
+      name: "&cHatos"
+  green:
+    name: "&aZöld"
+    color: "&a"
+    maximum_members: 10
+    entity:
+      location: world; 0, 100, 1, 0, 0
+      health: 1000
+      last_health: 1000 # EZT NE ÍRD ÁT! (csak ha akarod)
+      name: "&aIgnác"
+  blue:
+    name: "&9Kék"
+    color: "&9"
+    maximum_members: 10
+    entity:
+      location: world; 0, 100, 2, 0, 0
+      health: 1000
+      last_health: 1000 # EZT NE ÍRD ÁT! (csak ha akarod)
+      name: "&9Menyhárt"
+  yellow:
+    name: "&eSárga"
+    color: "&e"
+    maximum_members: 10
+    entity:
+      location: world; 0, 100, 3, 0, 0
+      health: 1000
+      last_health: 1000 # EZT NE ÍRD ÁT! (csak ha akarod)
+      name: "&eKaproncai"
+
+
+scoreboard:
+  health_design: "|||%mob_health%|||"
+  title: "&3&lPÁGISZ"
+  lines:
+    - " "
+    - " &4[%red_health%&4] &cPiros"
+    - " &4[%green_health%&4] &aZöld"
+    - " &4[%blue_health%&4] &9Kék"
+    - " &4[%yellow_health%&4] &eSárga"
+    - " "
+    - "&7dc.pagisz.hu"

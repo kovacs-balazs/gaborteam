@@ -1,5 +1,10 @@
 name: GaborTeam
 version: '1.0.0'
 main: me.koba1.gaborteam.Main
-
+depend:
+  - TAB
 api-version: '1.13'
+
+commands:
+  team:
+    aliases: [gaborteam, teams, gaborteams]

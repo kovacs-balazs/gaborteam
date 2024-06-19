@@ -1,25 +1,14 @@
 package me.koba1.gaborteam.objects;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import lombok.Getter;
 import me.koba1.gaborteam.Main;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
 
 
 @Getter
@@ -41,9 +30,11 @@ public class TeamEntity {
     }
 
     public void spawn() {
+        if(this.entity != null) this.entity.remove();
         for (Skeleton skeleton : this.location.getNearbyEntitiesByType(Skeleton.class, 1)) {
             if(isTeamEntity(skeleton)) {
                 System.out.println("Entity megtalálva!");
+                this.entity = skeleton;
                 return;
             }
         }
@@ -60,29 +51,19 @@ public class TeamEntity {
         skeleton.setVisualFire(false);
         skeleton.setCustomName(ChatColor.translateAlternateColorCodes('&', this.name));
         skeleton.setCustomNameVisible(true);
+        this.entity = skeleton;
 
-        ArmorStand health = (ArmorStand) this.location.getWorld().spawnEntity(this.location, EntityType.ARMOR_STAND);
-        health.setVisible(false);
-        health.setInvisible(true);
-        health.setAI(false);
-        health.setGravity(false);
-        health.setInvulnerable(true);
-        health.setCustomName("§c" + this.maxHealth + "❤");
-        health.setCustomNameVisible(true);
-        health.setVelocity(health.getVelocity().add(new Vector(0, 0.3, 0)));
-        skeleton.addPassenger(health);
-
-        ArmorStand name = (ArmorStand) this.location.getWorld().spawnEntity(this.location, EntityType.ARMOR_STAND);
-        name.setVisible(false);
-        name.setInvisible(true);
-        name.setAI(false);
-        name.setGravity(false);
-        name.setInvulnerable(true);
-        name.setCustomName(ChatColor.translateAlternateColorCodes('&', this.name));
-        name.setCustomNameVisible(true);
-        name.setVelocity(name.getVelocity().add(new Vector(0, 1, 0)));
-        skeleton.addPassenger(name);
         System.out.println("Entity lespawnolva!");
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+
+        if(this.entity == null) {
+            spawn();
+            return;
+        }
+        this.entity.teleport(location);
     }
 
     private void setTeamEntity(Entity entity) {
@@ -95,5 +76,24 @@ public class TeamEntity {
         PersistentDataContainer container = entity.getPersistentDataContainer();
         NamespacedKey key = new NamespacedKey(Main.getInstance(), "teamEntity");
         return container.has(key, PersistentDataType.BOOLEAN) && container.get(key, PersistentDataType.BOOLEAN);
+    }
+
+    public void save() {
+        Main.getInstance().getConfig().set("teams.%s.entity.last_health".formatted(this.team.getKey()), this.entity.getHealth());
+
+        String loc = new StringBuilder()
+                .append(this.location.getWorld())
+                .append("; ")
+                .append(this.location.getX())
+                .append(", ")
+                .append(this.location.getY())
+                .append(", ")
+                .append(this.location.getZ())
+                .append(", ")
+                .append(this.location.getYaw())
+                .append(", ")
+                .append(this.location.getPitch())
+                .toString();
+        Main.getInstance().getConfig().set("teams.%s.entity.location".formatted(this.team.getKey()), loc);
     }
 }
